@@ -139,7 +139,7 @@
         let monSal = document.getElementById("monSal").value;
         if (isNotEmpty(first) && isNotEmpty(last) && isNotEmpty(monSal)) {
             let row = document.createElement("tr");
-
+            // alle property values des letzten objekts im array werden in tds appended
             for (const attribut in empArray[empArray.length - 1]) {
                 let td = document.createElement("td");
                 let node = document.createTextNode(empArray[empArray.length - 1][attribut]);
@@ -147,12 +147,14 @@
                 row.appendChild(td);
             }
             document.getElementsByTagName("tbody")[0].appendChild(row);
+            // alles fertig, jetzt werden die input felder gelöscht
             resetInput(document.getElementById("firstName"));
             resetInput(document.getElementById("lastName"));
             resetInput(document.getElementById("monSal"));
         }
     }
 
+    // löschen der input felder
     function resetInput(field) {
         field.value = "";
         // return field;
