@@ -128,7 +128,39 @@
                 td.appendChild(node);                                             // hänge node an td
                 row.appendChild(td);                                              // hänge td an die tr
             }
+            createDeleteButton(row, empArray[i]["id"]);
             document.getElementsByTagName("tbody")[0].appendChild(row);           // hänge tr an den table body
+        }
+    }
+
+    // td mit button wird erstellt, button kriegt event listener und die id seines zugehörigen objekts
+    function createDeleteButton(row, id) {
+        let td = document.createElement("td");
+        let deleteButton = document.createElement("button");
+        deleteButton.setAttribute("type", "button");
+        deleteButton.className = "delButtons";
+        deleteButton.setAttribute("id", id);
+        deleteButton.innerHTML = "Löschen";
+        deleteButton.addEventListener("click", deleteEmployee);
+        td.appendChild(deleteButton);
+        row.appendChild(td);
+    }
+
+    // diese funktion callt die deletefromarray funktion mit der id des geklickten buttons als parameter und
+    // callt hinterher wieder drawTable
+    function deleteEmployee() {
+        deleteFromArray(empArray, this.id);
+        document.getElementById("ausgabe").innerHTML = "";
+        drawTable();
+    }
+
+    // loopt durch das array und wenn die property id eines  objekts === die übergebene id vom button, dann löscht es diesen
+    // eintrag aus dem  array
+    function deleteFromArray(array, index) {
+        for (let i = 0; i < array.length; i++) {
+            if (array[i].id.toString() === index) {
+                array.splice(i, 1);
+            }
         }
     }
 
@@ -146,6 +178,7 @@
                 td.appendChild(node);
                 row.appendChild(td);
             }
+            createDeleteButton(row, empArray[empArray.length - 1]["id"]);
             document.getElementsByTagName("tbody")[0].appendChild(row);
             // alles fertig, jetzt werden die input felder gelöscht
             resetInput(document.getElementById("firstName"));
