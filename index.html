@@ -37,43 +37,30 @@
 <div id="ausgabe"></div>
 <script>
     class Employee {
-        constructor(id, first, last, salary) {
-            this.id = id;
+        static employeeNextId = 1;
+
+        constructor(first, last, salary) {
+            this.id = Employee.employeeNextId;
             this.firstName = first;
             this.lastName = last;
             this.monSal = salary;
+            Employee.employeeNextId++;
         }
     }
-
+    // class method zum pushen eines neu erstellten Employee objekts
     Employee.add = function (obj) {
         empArray.push(obj);
     }
 
-    let empID = 2;
+    // array erstellen für alle Employee-objekte
     let empArray = [];
-    const emp001 = new Employee(1, "Petra", "Pan", 2100);
-    const emp002 = new Employee(2, "Freya", "Ridings", 2450.30);
+
+    // beispieldaten erzeugen und zum array hinzufügen
+    const emp001 = new Employee("Petra", "Pan", 2100);
+    const emp002 = new Employee("Freya", "Ridings", 2450.30);
     empArray = [emp001, emp002];
-    let headers = ["ID", "Vorname", "Nachname", "Monatslohn"];
 
-
-
-    function createEmployee() {
-        let first = document.getElementById("firstName").value.trim();
-        let last = document.getElementById("lastName").value.trim();
-        let monSal = Number(document.getElementById("monSal").value.trim());
-        if (isNotEmpty(first) && isNotEmpty(last) && isNotEmpty(monSal)) {
-            empID++;
-            const newEmp = new Employee(empID, first, last, monSal);
-            Employee.add(newEmp);
-            return newEmp;
-        }
-        else {
-            alert("Alle Felder müssen ausgefüllt sein.");
-        }
-    }
-
-
+    // funktion, die überprüft, ob ein übergebenes feld leer ist
     function isNotEmpty(field) {
         if (field.toString().trim() === "") {
             return false;
@@ -83,14 +70,37 @@
         }
     }
 
+
+    // funktion zum erzeugen von Employee objekten
+    function createEmployee() {
+        let first = document.getElementById("firstName").value.trim();
+        let last = document.getElementById("lastName").value.trim();
+        let monSal = document.getElementById("monSal").value.trim();
+        // unsere 3 felder werden auf leerheit überprüft
+        if (isNotEmpty(first) && isNotEmpty(last) && isNotEmpty(monSal)) {
+            // wenn sie nicht leer sind, wird ein neues Employee objekt erstellt
+            const newEmp = new Employee(first, last, Number(monSal));
+            // und mit der add methode ins array gepusht
+            Employee.add(newEmp);
+            return newEmp;
+        }
+        else {
+            // ansonsten gibts nen fehler
+            alert("Alle Felder müssen ausgefüllt sein.");
+        }
+    }
+
+    // eventlistener für den button
     document.getElementById("addButton").addEventListener("click", createEmployee);
     document.getElementById("addButton").addEventListener("click", addRow);
 
 
     console.log(empArray);
 
+    // überschriften für die tabelle
+    let headers = ["ID", "Vorname", "Nachname", "Monatslohn"];
 
-
+    // funktion zum erzeugen der tabelle
     function drawTable() {
         let tabelle = document.createElement("table");
         document.getElementById("ausgabe").appendChild(tabelle);
@@ -100,6 +110,7 @@
         tabelle.appendChild(body);
         head.appendChild(document.createElement("tr"));
 
+        // hier wird die header row ausgefüllt
         for (let i = 0; i < headers.length; i++) {
             let td = document.createElement("td");
             td.className = "headers";
@@ -121,12 +132,14 @@
         }
     }
 
+    // funktion zum hinzufügen einer reihe
     function addRow() {
         let first = document.getElementById("firstName").value;
         let last = document.getElementById("lastName").value;
         let monSal = document.getElementById("monSal").value;
         if (isNotEmpty(first) && isNotEmpty(last) && isNotEmpty(monSal)) {
             let row = document.createElement("tr");
+
             for (const attribut in empArray[empArray.length - 1]) {
                 let td = document.createElement("td");
                 let node = document.createTextNode(empArray[empArray.length - 1][attribut]);
