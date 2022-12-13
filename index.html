@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>CRUD-Anwendung Mitarbeiter</title>
+    <!--
+    Ziel ist eine CRUD-Anwendung, in der Mitarbeiter
+    - erstellt
+    - angezeigt
+    - geändert und
+    - gelöscht werden können
+
+    Aufgabe 1: erstelle ein javascript, dass bei Knopfdruck auf "Hinzufügen":
+    - überprüft, dass beide input-Felder nicht leer sind
+    - eine neue id erstellt (es soll fortlaufend hochgezählt werden)
+    - die id, den Vornamen, den Nachnamen und den Monatslohn in der Tabelle ergänzt
+    - die input-Felder für die nächste Eingabe leert
+
+    - dabei soll ein Array aus Mitarbeiter-Objekten erstellt werden,
+    - welches alle aktuellen Mitarbeiter enthält
+    -->
+    <style>
+        .headers {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+<h2>Mitarbeiter</h2>
+<div>
+    <label for="firstName">Vorname: </label><input type="text" id="firstName">
+    <label for="lastName">Nachname: </label><input type="text" id="lastName">
+    <label for="monSal">Monatslohn: </label><input type="text" id="monSal">
+    <button type="button" id="addButton">Hinzufügen</button>
+</div>
+<br>
+<div id="ausgabe"></div>
+<script>
+    class Employee {
+        constructor(id, first, last, salary) {
+            this.id = id;
+            this.firstName = first;
+            this.lastName = last;
+            this.monSal = salary;
+        }
+    }
+
+    Employee.add = function (obj) {
+        empArray.push(obj);
+    }
+
+    let empID = 2;
+    let empArray = [];
+    const emp001 = new Employee(1, "Petra", "Pan", 2100);
+    const emp002 = new Employee(2, "Freya", "Ridings", 2450.30);
+    empArray = [emp001, emp002];
+    let headers = ["ID", "Vorname", "Nachname", "Monatslohn"];
+
+
+
+    function createEmployee() {
+        let first = document.getElementById("firstName").value.trim();
+        let last = document.getElementById("lastName").value.trim();
+        let monSal = Number(document.getElementById("monSal").value.trim());
+        if (isNotEmpty(first) && isNotEmpty(last) && isNotEmpty(monSal)) {
+            empID++;
+            const newEmp = new Employee(empID, first, last, monSal);
+            Employee.add(newEmp);
+            return newEmp;
+        }
+        else {
+            alert("Alle Felder müssen ausgefüllt sein.");
+        }
+    }
+
+
+    function isNotEmpty(field) {
+        if (field.toString().trim() === "") {
+            return false;
+        }
+        else {
+            return true;
+        }
+    }
+
+    document.getElementById("addButton").addEventListener("click", createEmployee);
+    document.getElementById("addButton").addEventListener("click", addRow);
+
+
+    console.log(empArray);
+
+
+
+    function drawTable() {
+        let tabelle = document.createElement("table");
+        document.getElementById("ausgabe").appendChild(tabelle);
+        let head = document.createElement("thead");
+        let body = document.createElement("tbody");
+        tabelle.appendChild(head);
+        tabelle.appendChild(body);
+        head.appendChild(document.createElement("tr"));
+
+        for (let i = 0; i < headers.length; i++) {
+            let td = document.createElement("td");
+            td.className = "headers";
+            let node = document.createTextNode(headers[i]);
+            td.appendChild(node);
+            document.getElementsByTagName("tr")[0].appendChild(td);
+        }
+
+        // Befüllen des table bodys mit den property values aller Mitarbeiter-objekte
+        for (let i = 0; i < empArray.length; i++) {                               // Für jeden Teilnehmer
+            let row = document.createElement("tr");                               // erzeuge eine tr
+            for (const attribut in empArray[i]) {                                 // für jedes attribut im objekt
+                let td = document.createElement("td");                            // erzeuge eine td
+                let node = document.createTextNode(empArray[i][attribut]);        // erzeuge eine textnode mit dem attribut value
+                td.appendChild(node);                                             // hänge node an td
+                row.appendChild(td);                                              // hänge td an die tr
+            }
+            document.getElementsByTagName("tbody")[0].appendChild(row);           // hänge tr an den table body
+        }
+    }
+
+    function addRow() {
+        let first = document.getElementById("firstName").value;
+        let last = document.getElementById("lastName").value;
+        let monSal = document.getElementById("monSal").value;
+        if (isNotEmpty(first) && isNotEmpty(last) && isNotEmpty(monSal)) {
+            let row = document.createElement("tr");
+            for (const attribut in empArray[empArray.length - 1]) {
+                let td = document.createElement("td");
+                let node = document.createTextNode(empArray[empArray.length - 1][attribut]);
+                td.appendChild(node);
+                row.appendChild(td);
+            }
+            document.getElementsByTagName("tbody")[0].appendChild(row);
+            resetInput(document.getElementById("firstName"));
+            resetInput(document.getElementById("lastName"));
+            resetInput(document.getElementById("monSal"));
+        }
+    }
+
+    function resetInput(field) {
+        field.value = "";
+        // return field;
+    }
+
+    drawTable();
+
+</script>
+</body>
+</html>
