@@ -28,9 +28,9 @@
 <body>
 <h2>Mitarbeiter</h2>
 <div>
-    <label for="firstName">Vorname: </label><input type="text" id="firstName">
-    <label for="lastName">Nachname: </label><input type="text" id="lastName">
-    <label for="monSal">Monatslohn: </label><input type="text" id="monSal">
+    <label for="firstNameInput">Vorname: </label><input type="text" id="firstNameInput">
+    <label for="lastNameInput">Nachname: </label><input type="text" id="lastNameInput">
+    <label for="monSalInput">Monatslohn: </label><input type="text" id="monSalInput">
     <button type="button" id="addButton">Hinzufügen</button>
 </div>
 <br>
@@ -41,11 +41,42 @@
 
         constructor(first, last, salary) {
             this.id = Employee.employeeNextId;
-            this.firstName = first;
-            this.lastName = last;
+            this.setFirstName(first);
+            this.setLastName(last);
             this.monSal = salary;
             Employee.employeeNextId++;
         }
+
+        getFirstName() {
+            return this.firstName;
+        }
+
+        getlastName() {
+            return this.lastName;
+        }
+
+        getMonSal() {
+            return this.monSal;
+        }
+
+        setFirstName(newFirstName) {
+            if (newFirstName !== ""){
+                this.firstName = newFirstName.trim();
+            }
+        }
+
+        setLastName(newLastName) {
+            if (newLastName !== ""){
+                this.lastName = newLastName.trim();
+            }
+        }
+
+        setMonSal(newMonSal) {
+            if (newMonSal !== ""){
+                this.monSal = newMonSal.trim();
+            }
+        }
+
     }
     // class method zum pushen eines neu erstellten Employee objekts
     Employee.add = function (obj) {
@@ -73,15 +104,18 @@
 
     // funktion zum erzeugen von Employee objekten
     function createEmployee() {
-        let first = document.getElementById("firstName").value.trim();
-        let last = document.getElementById("lastName").value.trim();
-        let monSal = document.getElementById("monSal").value.trim();
+        let first = document.getElementById("firstNameInput").value.trim();
+        let last = document.getElementById("lastNameInput").value.trim();
+        let monSal = document.getElementById("monSalInput").value.trim();
         // unsere 3 felder werden auf leerheit überprüft
         if (isNotEmpty(first) && isNotEmpty(last) && isNotEmpty(monSal)) {
             // wenn sie nicht leer sind, wird ein neues Employee objekt erstellt
             const newEmp = new Employee(first, last, Number(monSal));
             // und mit der add methode ins array gepusht
             Employee.add(newEmp);
+            console.log(empArray);
+            document.getElementById("ausgabe").innerHTML = "";
+            drawTable();
             return newEmp;
         }
         else {
@@ -129,6 +163,7 @@
                 row.appendChild(td);                                              // hänge td an die tr
             }
             createDeleteButton(row, empArray[i]["id"]);
+            createUpdateButton(row, empArray[i]["id"]);
             document.getElementsByTagName("tbody")[0].appendChild(row);           // hänge tr an den table body
         }
     }
@@ -142,8 +177,7 @@
         deleteButton.setAttribute("id", id);
         deleteButton.innerHTML = "Löschen";
         deleteButton.addEventListener("click", function () {
-            deleteEmployee(empArray, this.id)
-        });
+            deleteEmployee(empArray, this.id)});
         td.appendChild(deleteButton);
         row.appendChild(td);
     }
@@ -161,12 +195,41 @@
         drawTable();
     }
 
+    function createUpdateButton(row, id) {
+        let td = document.createElement("td");
+        let deleteButton = document.createElement("button");
+        deleteButton.setAttribute("type", "button");
+        deleteButton.className = "updButtons";
+        deleteButton.setAttribute("id", id);
+        deleteButton.innerHTML = "Ändern";
+        deleteButton.addEventListener("click", function () {
+            updateEmployee(empArray, this.id)});
+        td.appendChild(deleteButton);
+        row.appendChild(td);
+    }
+
+    function updateEmployee(array, index) {
+        for (let i = 0; i < array.length; i++) {
+            if (array[i].id.toString() === index) {
+                array[i].setFirstName(document.getElementById("firstNameInput").value);
+                array[i].setLastName(document.getElementById("lastNameInput").value);
+                array[i].setMonSal(document.getElementById("monSalInput").value);
+                console.log(empArray);
+            }
+        }
+        resetInput(document.getElementById("firstNameInput"));
+        resetInput(document.getElementById("lastNameInput"));
+        resetInput(document.getElementById("monSalInput"));
+        document.getElementById("ausgabe").innerHTML = "";
+        drawTable();
+    }
+
 
     // funktion zum hinzufügen einer reihe
     function addRow() {
-        let first = document.getElementById("firstName").value;
-        let last = document.getElementById("lastName").value;
-        let monSal = document.getElementById("monSal").value;
+        let first = document.getElementById("firstNameInput").value;
+        let last = document.getElementById("lastNameInput").value;
+        let monSal = document.getElementById("monSalInput").value;
         if (isNotEmpty(first) && isNotEmpty(last) && isNotEmpty(monSal)) {
             let row = document.createElement("tr");
             // alle property values des letzten objekts im array werden in tds appended
@@ -177,18 +240,20 @@
                 row.appendChild(td);
             }
             createDeleteButton(row, empArray[empArray.length - 1]["id"]);
+            createUpdateButton(row, empArray[empArray.length - 1]["id"]);
             document.getElementsByTagName("tbody")[0].appendChild(row);
             // alles fertig, jetzt werden die input felder gelöscht
-            resetInput(document.getElementById("firstName"));
-            resetInput(document.getElementById("lastName"));
-            resetInput(document.getElementById("monSal"));
+            resetInput(document.getElementById("firstNameInput"));
+            resetInput(document.getElementById("lastNameInput"));
+            resetInput(document.getElementById("monSalInput"));
+            document.getElementById("ausgabe").innerHTML = "";
+            drawTable();
         }
     }
 
     // löschen der input felder
     function resetInput(field) {
         field.value = "";
-        // return field;
     }
 
     drawTable();
