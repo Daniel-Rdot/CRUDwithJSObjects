@@ -141,28 +141,26 @@
         deleteButton.className = "delButtons";
         deleteButton.setAttribute("id", id);
         deleteButton.innerHTML = "Löschen";
-        deleteButton.addEventListener("click", deleteEmployee);
+        deleteButton.addEventListener("click", function () {
+            deleteEmployee(empArray, this.id)
+        });
         td.appendChild(deleteButton);
         row.appendChild(td);
     }
 
-    // diese funktion callt die deletefromarray funktion mit der id des geklickten buttons als parameter und
-    // callt hinterher wieder drawTable
-    function deleteEmployee() {
-        deleteFromArray(empArray, this.id);
-        document.getElementById("ausgabe").innerHTML = "";
-        drawTable();
-    }
 
     // loopt durch das array und wenn die property id eines  objekts === die übergebene id vom button, dann löscht es diesen
-    // eintrag aus dem  array
-    function deleteFromArray(array, index) {
+    // eintrag aus dem  array, löscht den inhalt des ausgabe-divs und schreibt die tabelle neu rein
+    function deleteEmployee(array, index) {
         for (let i = 0; i < array.length; i++) {
             if (array[i].id.toString() === index) {
                 array.splice(i, 1);
             }
         }
+        document.getElementById("ausgabe").innerHTML = "";
+        drawTable();
     }
+
 
     // funktion zum hinzufügen einer reihe
     function addRow() {
