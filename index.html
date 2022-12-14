@@ -124,9 +124,31 @@
         }
     }
 
-    // eventlistener für den button
+    // eventlistener für den add-button
+    function addEmpListener() {
+        let oldBtn = document.getElementById("addButton");
+        let newBtn = oldBtn.cloneNode(true);
+        oldBtn.parentNode.replaceChild(newBtn, oldBtn);
+        // addBtn.removeEventListener("click", updateEmployee);
+        document.getElementById("addButton").addEventListener("click", createEmployee);
+        document.getElementById("addButton").addEventListener("click", addRow);
+    }
+
+    // addEmpListener();
     document.getElementById("addButton").addEventListener("click", createEmployee);
     document.getElementById("addButton").addEventListener("click", addRow);
+
+
+
+
+    function addUpdListener(id) {
+        let oldBtn = document.getElementById("addButton");
+        let newBtn = oldBtn.cloneNode(true);
+        oldBtn.parentNode.replaceChild(newBtn, oldBtn);
+        document.getElementById("addButton").addEventListener("click", function () {
+            updateEmployee(empArray, id)
+        });
+    }
 
 
     console.log(empArray);
@@ -197,15 +219,30 @@
 
     function createUpdateButton(row, id) {
         let td = document.createElement("td");
-        let deleteButton = document.createElement("button");
-        deleteButton.setAttribute("type", "button");
-        deleteButton.className = "updButtons";
-        deleteButton.setAttribute("id", id);
-        deleteButton.innerHTML = "Ändern";
-        deleteButton.addEventListener("click", function () {
-            updateEmployee(empArray, this.id)});
-        td.appendChild(deleteButton);
+        let updateButton = document.createElement("button");
+        updateButton.setAttribute("type", "button");
+        updateButton.className = "updButtons";
+        updateButton.setAttribute("id", "upd"+id);
+        updateButton.innerHTML = "Ändern";
+        updateButton.addEventListener("click", function () {
+            displayUpdateUI(empArray, this.id.slice(3))});
+        td.appendChild(updateButton);
         row.appendChild(td);
+    }
+
+    function displayUpdateUI(array, index) {
+        for (let i = 0; i < array.length; i++) {
+            if (array[i].id == index) {
+                document.getElementById("firstNameInput").value = array[i].getFirstName();
+                document.getElementById("lastNameInput").value = array[i].getlastName();
+                document.getElementById("monSalInput").value = array[i].getMonSal();
+                let addBtn = document.getElementById("addButton");
+                addBtn.innerHTML = "Ändern";
+                addUpdListener(index);
+                console.log(index);
+                document.getElementById("upd"+index).style.display = "none";
+            }
+        }
     }
 
     function updateEmployee(array, index) {
@@ -217,11 +254,17 @@
                 console.log(empArray);
             }
         }
+        console.log('upd: ' + index)
         resetInput(document.getElementById("firstNameInput"));
         resetInput(document.getElementById("lastNameInput"));
         resetInput(document.getElementById("monSalInput"));
         document.getElementById("ausgabe").innerHTML = "";
+        // location.reload();
         drawTable();
+        let addBtn = document.getElementById("addButton");
+        addBtn.innerHTML = "Hinzufügen";
+        addEmpListener();
+        document.getElementById("upd"+index).style.display = "initial";
     }
 
 
