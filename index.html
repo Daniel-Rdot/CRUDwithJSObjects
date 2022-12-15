@@ -86,6 +86,8 @@
     }
 
 
+
+
     // array erstellen für alle Employee-objekte
     let empArray = [];
 
@@ -93,7 +95,7 @@
     // beispieldaten erzeugen und zum array hinzufügen
     const emp001 = new Employee("Petra", "Pan", 2100);
     const emp002 = new Employee("Freya", "Ridings", 2450.30);
-    empArray = [emp001, emp002];
+    empArray.push(emp001, emp002);
 
 
     // funktion, die überprüft, ob ein übergebenes feld leer ist
@@ -118,9 +120,9 @@
             const newEmp = new Employee(first, last, Number(monSal));
             // und mit der add methode ins array gepusht
             Employee.add(newEmp);
-            console.log(empArray);
             document.getElementById("ausgabe").innerHTML = "";
             drawTable();
+            // location.reload();
             return newEmp;
         }
         else {
@@ -159,10 +161,6 @@
             updateEmployee(empArray, id)
         });
     }
-
-
-    console.log(empArray);
-
 
     // überschriften für die tabelle
     let headers = ["ID", "Vorname", "Nachname", "Monatslohn"];
