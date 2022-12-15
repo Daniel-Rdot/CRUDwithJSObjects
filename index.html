@@ -25,7 +25,7 @@
         }
     </style>
 </head>
-<body>
+<body onload="drawTable()">
 <h2>Mitarbeiter</h2>
 <div>
     <label for="firstNameInput">Vorname: </label><input type="text" id="firstNameInput">
@@ -47,6 +47,7 @@
             Employee.employeeNextId++;
         }
 
+        // getter funktionen
         getFirstName() {
             return this.firstName;
         }
@@ -59,6 +60,7 @@
             return this.monSal;
         }
 
+        // setter funktionen
         setFirstName(newFirstName) {
             if (newFirstName !== ""){
                 this.firstName = newFirstName.trim();
@@ -83,13 +85,16 @@
         empArray.push(obj);
     }
 
+
     // array erstellen für alle Employee-objekte
     let empArray = [];
+
 
     // beispieldaten erzeugen und zum array hinzufügen
     const emp001 = new Employee("Petra", "Pan", 2100);
     const emp002 = new Employee("Freya", "Ridings", 2450.30);
     empArray = [emp001, emp002];
+
 
     // funktion, die überprüft, ob ein übergebenes feld leer ist
     function isNotEmpty(field) {
@@ -124,23 +129,28 @@
         }
     }
 
-    // eventlistener für den add-button
+
+    // eventlistener für den add-button, um update funktionalität durch create funktionalität zu ersetzen
     function addEmpListener() {
         let oldBtn = document.getElementById("addButton");
+        // hier wird ein klon des addbuttons erstellt. klone von objekten erhalten alle attribute des originals und ihre werte
+        // sowie die inline listener (onclick), nicht aber nachträglich hinzugefügte eventlistener
+        // damit erzeuge ich also den gleichen button, bloß ohne listener
         let newBtn = oldBtn.cloneNode(true);
+        // hier ersetze ich den alten button im document durch den klon
         oldBtn.parentNode.replaceChild(newBtn, oldBtn);
-        // addBtn.removeEventListener("click", updateEmployee);
+        // und jetzt kommen andere event listener auf den button
         document.getElementById("addButton").addEventListener("click", createEmployee);
         document.getElementById("addButton").addEventListener("click", addRow);
     }
 
-    // addEmpListener();
+
+    // initiale eventlistener für den addBtn mit createEmployee und addRow funktionen
     document.getElementById("addButton").addEventListener("click", createEmployee);
     document.getElementById("addButton").addEventListener("click", addRow);
 
 
-
-
+    // gleiche funktion wie addEmpListener, nur umgekehrt. ersetzt also create funktionalität durch die update funktionalität
     function addUpdListener(id) {
         let oldBtn = document.getElementById("addButton");
         let newBtn = oldBtn.cloneNode(true);
@@ -153,8 +163,10 @@
 
     console.log(empArray);
 
+
     // überschriften für die tabelle
     let headers = ["ID", "Vorname", "Nachname", "Monatslohn"];
+
 
     // funktion zum erzeugen der tabelle
     function drawTable() {
@@ -184,6 +196,7 @@
                 td.appendChild(node);                                             // hänge node an td
                 row.appendChild(td);                                              // hänge td an die tr
             }
+            // die delete und update buttons bekommen bei erstellung die .id property es aktuellen objekts als id übergeben
             createDeleteButton(row, empArray[i]["id"]);
             createUpdateButton(row, empArray[i]["id"]);
             document.getElementsByTagName("tbody")[0].appendChild(row);           // hänge tr an den table body
@@ -196,6 +209,7 @@
         let deleteButton = document.createElement("button");
         deleteButton.setAttribute("type", "button");
         deleteButton.className = "delButtons";
+        // deleteButtons bekommen die .id property ihres zugehörigen objekts als id zugeteilt
         deleteButton.setAttribute("id", id);
         deleteButton.innerHTML = "Löschen";
         deleteButton.addEventListener("click", function () {
@@ -208,59 +222,77 @@
     // loopt durch das array und wenn die property id eines  objekts === die übergebene id vom button, dann löscht es diesen
     // eintrag aus dem  array, löscht den inhalt des ausgabe-divs und schreibt die tabelle neu rein
     function deleteEmployee(array, index) {
+        // loop durch das array
         for (let i = 0; i < array.length; i++) {
+            // wenn die .id property des aktuellen objekts mit der übergebenen id des buttons übereinstimmt
             if (array[i].id.toString() === index) {
+                // splice das array an diesem index, also entferne dieses objekt aus dem array
                 array.splice(i, 1);
             }
         }
+        // hier wird zunächst die anzeige gelöscht um dann die tabelle mti dem neuen zustands des arrays neu darzustellen
         document.getElementById("ausgabe").innerHTML = "";
         drawTable();
     }
 
+
+    // erstellung des updatebuttons
     function createUpdateButton(row, id) {
         let td = document.createElement("td");
         let updateButton = document.createElement("button");
         updateButton.setAttribute("type", "button");
         updateButton.className = "updButtons";
+        // updateButtons bekommen die id "upd" + die .id ihrer zeile, damit sie sich von der id des delButtons unterscheidet
         updateButton.setAttribute("id", "upd"+id);
         updateButton.innerHTML = "Ändern";
+        // eventlistener zum aufruf der displayUpdateUI funktion. aufgerufen mit einem slice ab index 3, um aus upd1 eine 1 zu machen
         updateButton.addEventListener("click", function () {
             displayUpdateUI(empArray, this.id.slice(3))});
         td.appendChild(updateButton);
         row.appendChild(td);
     }
 
+
+    // änderung des UIs von create auf update nach klick auf den updateButton
     function displayUpdateUI(array, index) {
         for (let i = 0; i < array.length; i++) {
             if (array[i].id == index) {
+                // die zugehörigen mitarbeiterdaten werden in den input-feldern angezeigt
                 document.getElementById("firstNameInput").value = array[i].getFirstName();
                 document.getElementById("lastNameInput").value = array[i].getlastName();
                 document.getElementById("monSalInput").value = array[i].getMonSal();
-                let addBtn = document.getElementById("addButton");
-                addBtn.innerHTML = "Ändern";
+                // aufschrift des addBtn wird geändert auf "Ändern"
+                document.getElementById("addButton").innerHTML = "Ändern";
+                // eventlistener werden geändert
                 addUpdListener(index);
-                console.log(index);
+                // updateButton wird ausgeblendet
                 document.getElementById("upd"+index).style.display = "none";
             }
         }
     }
 
+
+    // funktion zum ändern des objekts im array
     function updateEmployee(array, index) {
+        // loop durchs array
         for (let i = 0; i < array.length; i++) {
+            // wenn die beim aufruf übergebene id mit der .id property des aktuellen objekts übereinstimmt...
             if (array[i].id.toString() === index) {
+                // nehme die aktuellen values in den input-feldern und überschreibe damit die property values des objekts
+                // hierzu verwende ich die jeweiligen setter funktionen
                 array[i].setFirstName(document.getElementById("firstNameInput").value);
                 array[i].setLastName(document.getElementById("lastNameInput").value);
                 array[i].setMonSal(document.getElementById("monSalInput").value);
-                console.log(empArray);
             }
         }
-        console.log('upd: ' + index)
+        // danach werden die input-felder geleert
         resetInput(document.getElementById("firstNameInput"));
         resetInput(document.getElementById("lastNameInput"));
         resetInput(document.getElementById("monSalInput"));
+        // dann die anzeige geleert und die tabelle mit dem neuen zustand des arrays neu dargestellt
         document.getElementById("ausgabe").innerHTML = "";
-        // location.reload();
         drawTable();
+        // addBtn wird in den ursprungszustand zurückversetzt
         let addBtn = document.getElementById("addButton");
         addBtn.innerHTML = "Hinzufügen";
         addEmpListener();
@@ -298,9 +330,6 @@
     function resetInput(field) {
         field.value = "";
     }
-
-    drawTable();
-
 </script>
 </body>
 </html>
