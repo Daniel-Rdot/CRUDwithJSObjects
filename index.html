@@ -90,12 +90,42 @@
 
     // array erstellen für alle Employee-objekte
     let empArray = [];
+    // const emp001 = new Employee("Petra", "Pan", 2100);
+    // const emp002 = new Employee("Freya", "Ridings", 2450.30);
+    // empArray.push(emp001, emp002);
 
+    // Set
+    // localStorage.setItem("test", JSON.stringify(empArray));
 
     // beispieldaten erzeugen und zum array hinzufügen
-    const emp001 = new Employee("Petra", "Pan", 2100);
-    const emp002 = new Employee("Freya", "Ridings", 2450.30);
-    empArray.push(emp001, emp002);
+    // Get
+    if (localStorage.getItem("test")) {
+        console.log("array in localStorage");
+        console.log(JSON.parse(localStorage.getItem("test")));
+        empArray = JSON.parse(localStorage.getItem("test"));
+        // empArray = [];
+        // const emp001 = new Employee("Petra", "Pan", 2100);
+        // const emp002 = new Employee("Freya", "Ridings", 2450.30);
+        // empArray.push(emp001, emp002);
+        // storeArray("test", empArray);
+        console.log("empArray")
+        console.log(empArray);
+    }
+    else {
+        console.log("nope");
+        Employee.add(new Employee("Petra", "Pan", 2100));
+        Employee.add(new Employee("Freya", "Ridings", 2450.30));
+        storeArray("test", empArray);
+    }
+    // console.log(empArray);
+
+    function storeArray(name, arr) {
+        localStorage.setItem(name, JSON.stringify(arr));
+    }
+
+    function retrieveArray() {
+
+    }
 
 
     // funktion, die überprüft, ob ein übergebenes feld leer ist
@@ -120,6 +150,7 @@
             const newEmp = new Employee(first, last, Number(monSal));
             // und mit der add methode ins array gepusht
             Employee.add(newEmp);
+            storeArray("test", empArray);
             document.getElementById("ausgabe").innerHTML = "";
             drawTable();
             // location.reload();
