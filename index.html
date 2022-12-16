@@ -91,15 +91,15 @@
     }
     // class method zum pushen eines neu erstellten Employee objekts
     Employee.add = function (obj) {
-        empArray.push(obj);
+        employeeArray.push(obj);
     }
 
 
     // array erstellen für alle Employee-objekte
-    let empArray = [];
+    let employeeArray = [];
 
-    // wenn werte für die keys "test" und "nextId" in der localstorage existieren
-    if (localStorage.getItem("test") && localStorage.getItem("nextId")) {
+    // wenn werte für die keys "employeeJSONArray" und "nextId" in der localstorage existieren
+    if (localStorage.getItem("employeeJSONArray") && localStorage.getItem("nextId")) {
         // dann hole die werte aus der localstorage
         retrieveArray();
     }
@@ -107,7 +107,7 @@
         // ansonsten füge die beispieldaten wieder hinzu und speichere sie ab
         Employee.add(new Employee("Petra", "Pan", 2100));
         Employee.add(new Employee("Freya", "Ridings", 2450.30));
-        storeArray("test", empArray);
+        storeArray("employeeJSONArray", employeeArray);
     }
 
 
@@ -121,8 +121,8 @@
 
     // diese funktion liest das array aus der localstorage
     function retrieveArray() {
-        let parsed = JSON.parse(localStorage.getItem("test"));
-        empArray = reconstructObjects(parsed);
+        let parsed = JSON.parse(localStorage.getItem("employeeJSONArray"));
+        employeeArray = reconstructObjects(parsed);
     }
 
 
@@ -164,7 +164,7 @@
             const newEmp = new Employee(first, last, Number(monSal));
             // und mit der add methode ins array gepusht
             Employee.add(newEmp);
-            storeArray("test", empArray);
+            storeArray("employeeJSONArray", employeeArray);
             // document.getElementById("ausgabe").innerHTML = "";
             // drawTable();
             location.reload();
@@ -202,7 +202,7 @@
         let newBtn = oldBtn.cloneNode(true);
         oldBtn.parentNode.replaceChild(newBtn, oldBtn);
         document.getElementById("addButton").addEventListener("click", function () {
-            updateEmployee(empArray, id)
+            updateEmployee(employeeArray, id)
         });
     }
 
@@ -231,17 +231,17 @@
         }
 
         // Befüllen des table bodys mit den property values aller Mitarbeiter-objekte
-        for (let i = 0; i < empArray.length; i++) {                               // Für jeden Teilnehmer
+        for (let i = 0; i < employeeArray.length; i++) {                          // Für jeden Teilnehmer
             let row = document.createElement("tr");                               // erzeuge eine tr
-            for (const attribut in empArray[i]) {                                 // für jedes attribut im objekt
+            for (const attribut in employeeArray[i]) {                            // für jedes attribut im objekt
                 let td = document.createElement("td");                            // erzeuge eine td
-                let node = document.createTextNode(empArray[i][attribut]);        // erzeuge eine textnode mit dem attribut value
+                let node = document.createTextNode(employeeArray[i][attribut]);   // erzeuge eine textnode mit dem attribut value
                 td.appendChild(node);                                             // hänge node an td
                 row.appendChild(td);                                              // hänge td an die tr
             }
             // die delete und update buttons bekommen bei erstellung die .id property es aktuellen objekts als id übergeben
-            createDeleteButton(row, empArray[i]["id"]);
-            createUpdateButton(row, empArray[i]["id"]);
+            createDeleteButton(row, employeeArray[i]["id"]);
+            createUpdateButton(row, employeeArray[i]["id"]);
             document.getElementsByTagName("tbody")[0].appendChild(row);           // hänge tr an den table body
         }
     }
@@ -257,7 +257,7 @@
         deleteButton.setAttribute("id", id);
         deleteButton.innerHTML = "Löschen";
         deleteButton.addEventListener("click", function () {
-            deleteEmployee(empArray, this.id)});
+            deleteEmployee(employeeArray, this.id)});
         td.appendChild(deleteButton);
         row.appendChild(td);
     }
@@ -274,7 +274,7 @@
                 array.splice(i, 1);
             }
         }
-        storeArray("test", empArray);
+        storeArray("employeeJSONArray", employeeArray);
         // hier wird zunächst die anzeige gelöscht um dann die tabelle mti dem neuen zustands des arrays neu darzustellen
         // document.getElementById("ausgabe").innerHTML = "";
         // drawTable();
@@ -293,7 +293,7 @@
         updateButton.innerHTML = "Ändern";
         // eventlistener zum aufruf der displayUpdateUI funktion. aufgerufen mit einem slice ab index 3, um aus upd1 eine 1 zu machen
         updateButton.addEventListener("click", function () {
-            displayUpdateUI(empArray, this.id.slice(3))});
+            displayUpdateUI(employeeArray, this.id.slice(3))});
         td.appendChild(updateButton);
         row.appendChild(td);
     }
@@ -333,7 +333,7 @@
                 array[i].setMonSal(document.getElementById("monSalInput").value);
             }
         }
-        storeArray("test", empArray);
+        storeArray("employeeJSONArray", employeeArray);
         // danach werden die input-felder geleert
         resetInput(document.getElementById("firstNameInput"));
         resetInput(document.getElementById("lastNameInput"));
@@ -356,14 +356,14 @@
         if (isNotEmpty(first) && isNotEmpty(last) && isNotEmpty(monSal)) {
             let row = document.createElement("tr");
             // alle property values des letzten objekts im array werden in tds appended
-            for (const attribut in empArray[empArray.length - 1]) {
+            for (const attribut in employeeArray[employeeArray.length - 1]) {
                 let td = document.createElement("td");
-                let node = document.createTextNode(empArray[empArray.length - 1][attribut]);
+                let node = document.createTextNode(employeeArray[employeeArray.length - 1][attribut]);
                 td.appendChild(node);
                 row.appendChild(td);
             }
-            createDeleteButton(row, empArray[empArray.length - 1]["id"]);
-            createUpdateButton(row, empArray[empArray.length - 1]["id"]);
+            createDeleteButton(row, employeeArray[employeeArray.length - 1]["id"]);
+            createUpdateButton(row, employeeArray[employeeArray.length - 1]["id"]);
             document.getElementsByTagName("tbody")[0].appendChild(row);
             // alles fertig, jetzt werden die input felder gelöscht
             resetInput(document.getElementById("firstNameInput"));
