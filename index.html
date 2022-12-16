@@ -37,28 +37,38 @@
 <div id="ausgabe"></div>
 <script>
     class Employee {
-        static employeeNextId = 1;
+        static employeeNextId = Number(localStorage.getItem("nextId"));
+        // static employeeNextId = 1;
 
-        constructor(first, last, salary) {
-            this.id = Employee.employeeNextId;
+        // constructor "overload".
+        constructor(first, last, salary, id = null) {
+            if (id == undefined) {
+
+                id = Employee.employeeNextId;
+                Employee.employeeNextId++;
+            }
+            this.id = id;
             this.setFirstName(first);
             this.setLastName(last);
-            this.monSal = salary;
-            Employee.employeeNextId++;
+            this.setMonSal(salary);
         }
+
+        // test(json) {
+        //     Object.assign(this, json);
+        // }
 
         // getter funktionen
-        getFirstName() {
-            return this.firstName;
-        }
-
-        getlastName() {
-            return this.lastName;
-        }
-
-        getMonSal() {
-            return this.monSal;
-        }
+        // getFirstName() {
+        //     return this.firstName;
+        // }
+        //
+        // getLastName() {
+        //     return this.lastName;
+        // }
+        //
+        // getMonSal() {
+        //     return this.monSal;
+        // }
 
         // setter funktionen
         setFirstName(newFirstName) {
@@ -75,10 +85,9 @@
 
         setMonSal(newMonSal) {
             if (newMonSal !== ""){
-                this.monSal = newMonSal.trim();
+                this.monSal = Number(newMonSal);
             }
         }
-
     }
     // class method zum pushen eines neu erstellten Employee objekts
     Employee.add = function (obj) {
@@ -86,45 +95,50 @@
     }
 
 
-
-
     // array erstellen für alle Employee-objekte
     let empArray = [];
-    // const emp001 = new Employee("Petra", "Pan", 2100);
-    // const emp002 = new Employee("Freya", "Ridings", 2450.30);
-    // empArray.push(emp001, emp002);
 
-    // Set
-    // localStorage.setItem("test", JSON.stringify(empArray));
-
-    // beispieldaten erzeugen und zum array hinzufügen
-    // Get
-    if (localStorage.getItem("test")) {
-        console.log("array in localStorage");
-        console.log(JSON.parse(localStorage.getItem("test")));
-        empArray = JSON.parse(localStorage.getItem("test"));
-        // empArray = [];
-        // const emp001 = new Employee("Petra", "Pan", 2100);
-        // const emp002 = new Employee("Freya", "Ridings", 2450.30);
-        // empArray.push(emp001, emp002);
-        // storeArray("test", empArray);
-        console.log("empArray")
-        console.log(empArray);
+    // wenn werte für die keys "test" und "nextId" in der localstorage existieren
+    if (localStorage.getItem("test") && localStorage.getItem("nextId")) {
+        // dann hole die werte aus der localstorage
+        retrieveArray();
     }
     else {
-        console.log("nope");
+        // ansonsten füge die beispieldaten wieder hinzu und speichere sie ab
         Employee.add(new Employee("Petra", "Pan", 2100));
         Employee.add(new Employee("Freya", "Ridings", 2450.30));
         storeArray("test", empArray);
     }
-    // console.log(empArray);
 
+
+    // diese funktion speichert das array und die nextId in der localstorage ab
     function storeArray(name, arr) {
         localStorage.setItem(name, JSON.stringify(arr));
+        console.log(localStorage);
+        localStorage.setItem("nextId", Employee.employeeNextId.toString());
     }
 
-    function retrieveArray() {
 
+    // diese funktion liest das array aus der localstorage
+    function retrieveArray() {
+        let parsed = JSON.parse(localStorage.getItem("test"));
+        empArray = reconstructObjects(parsed);
+    }
+
+
+    // diese funktion rekonstruiert die objekte aus der localstorage. mit json importierte objekte haben nicht die methoden
+    // der klasse, weil sie nicht beim aktuellen seitenaufruf durch den konstruktor erzeugt worden sind
+    function reconstructObjects(json) {
+        // ich erzeuge ein temporäres array
+        let arr = [];
+        // loope durch das array, das mit json importiert wurde
+        for (let i = 0; i < json.length; i++) {
+            // erzeugung neuer Employee objekte mit parametern aus dem jeweiligen "json-objekt"
+            const newEmp = new Employee(json[i].firstName, json[i].lastName, json[i].monSal, json[i].id);
+            arr.push(newEmp)
+        }
+        // funktion gibt das temporäre array zurück
+        return arr;
     }
 
 
@@ -151,10 +165,9 @@
             // und mit der add methode ins array gepusht
             Employee.add(newEmp);
             storeArray("test", empArray);
-            document.getElementById("ausgabe").innerHTML = "";
-            drawTable();
-            // location.reload();
-            return newEmp;
+            // document.getElementById("ausgabe").innerHTML = "";
+            // drawTable();
+            location.reload();
         }
         else {
             // ansonsten gibts nen fehler
@@ -192,6 +205,7 @@
             updateEmployee(empArray, id)
         });
     }
+
 
     // überschriften für die tabelle
     let headers = ["ID", "Vorname", "Nachname", "Monatslohn"];
@@ -232,6 +246,7 @@
         }
     }
 
+
     // td mit button wird erstellt, button kriegt event listener und die id seines zugehörigen objekts
     function createDeleteButton(row, id) {
         let td = document.createElement("td");
@@ -259,9 +274,11 @@
                 array.splice(i, 1);
             }
         }
+        storeArray("test", empArray);
         // hier wird zunächst die anzeige gelöscht um dann die tabelle mti dem neuen zustands des arrays neu darzustellen
-        document.getElementById("ausgabe").innerHTML = "";
-        drawTable();
+        // document.getElementById("ausgabe").innerHTML = "";
+        // drawTable();
+        location.reload();
     }
 
 
@@ -287,9 +304,10 @@
         for (let i = 0; i < array.length; i++) {
             if (array[i].id == index) {
                 // die zugehörigen mitarbeiterdaten werden in den input-feldern angezeigt
-                document.getElementById("firstNameInput").value = array[i].getFirstName();
-                document.getElementById("lastNameInput").value = array[i].getlastName();
-                document.getElementById("monSalInput").value = array[i].getMonSal();
+                console.log(array[i].firstName);
+                document.getElementById("firstNameInput").value = array[i].firstName;
+                document.getElementById("lastNameInput").value = array[i].lastName;
+                document.getElementById("monSalInput").value = array[i].monSal;
                 // aufschrift des addBtn wird geändert auf "Ändern"
                 document.getElementById("addButton").innerHTML = "Ändern";
                 // eventlistener werden geändert
@@ -309,23 +327,24 @@
             if (array[i].id.toString() === index) {
                 // nehme die aktuellen values in den input-feldern und überschreibe damit die property values des objekts
                 // hierzu verwende ich die jeweiligen setter funktionen
+                console.log(array[i]);
                 array[i].setFirstName(document.getElementById("firstNameInput").value);
                 array[i].setLastName(document.getElementById("lastNameInput").value);
                 array[i].setMonSal(document.getElementById("monSalInput").value);
             }
         }
+        storeArray("test", empArray);
         // danach werden die input-felder geleert
         resetInput(document.getElementById("firstNameInput"));
         resetInput(document.getElementById("lastNameInput"));
         resetInput(document.getElementById("monSalInput"));
         // dann die anzeige geleert und die tabelle mit dem neuen zustand des arrays neu dargestellt
-        document.getElementById("ausgabe").innerHTML = "";
-        drawTable();
         // addBtn wird in den ursprungszustand zurückversetzt
         let addBtn = document.getElementById("addButton");
         addBtn.innerHTML = "Hinzufügen";
         addEmpListener();
-        document.getElementById("upd"+index).style.display = "initial";
+        // document.getElementById("upd"+index).style.display = "initial";
+        location.reload();
     }
 
 
