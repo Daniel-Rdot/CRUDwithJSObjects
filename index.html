@@ -164,30 +164,15 @@
             const newEmp = new Employee(first, last, Number(monSal));
             // und mit der add methode ins array gepusht
             Employee.add(newEmp);
+            // array wird in localstorage gespeichert
             storeArray("employeeJSONArray", employeeArray);
-            // document.getElementById("ausgabe").innerHTML = "";
-            // drawTable();
+            // seite wird neu geladen
             location.reload();
         }
         else {
             // ansonsten gibts nen fehler
             alert("Alle Felder müssen ausgefüllt sein.");
         }
-    }
-
-
-    // eventlistener für den add-button, um update funktionalität durch create funktionalität zu ersetzen
-    function addEmpListener() {
-        let oldBtn = document.getElementById("addButton");
-        // hier wird ein klon des addbuttons erstellt. klone von objekten erhalten alle attribute des originals und ihre werte
-        // sowie die inline listener (onclick), nicht aber nachträglich hinzugefügte eventlistener
-        // damit erzeuge ich also den gleichen button, bloß ohne listener
-        let newBtn = oldBtn.cloneNode(true);
-        // hier ersetze ich den alten button im document durch den klon
-        oldBtn.parentNode.replaceChild(newBtn, oldBtn);
-        // und jetzt kommen andere event listener auf den button
-        document.getElementById("addButton").addEventListener("click", createEmployee);
-        document.getElementById("addButton").addEventListener("click", addRow);
     }
 
 
@@ -199,8 +184,13 @@
     // gleiche funktion wie addEmpListener, nur umgekehrt. ersetzt also create funktionalität durch die update funktionalität
     function addUpdListener(id) {
         let oldBtn = document.getElementById("addButton");
+        // hier wird ein klon des addbuttons erstellt. klone von objekten erhalten alle attribute des originals und ihre werte
+        // sowie die inline listener (onclick), nicht aber nachträglich hinzugefügte eventlistener
+        // damit erzeuge ich also den gleichen button, bloß ohne listener
         let newBtn = oldBtn.cloneNode(true);
+        // hier ersetze ich den alten button im document durch den klon
         oldBtn.parentNode.replaceChild(newBtn, oldBtn);
+        // und jetzt kommen andere event listener auf den button
         document.getElementById("addButton").addEventListener("click", function () {
             updateEmployee(employeeArray, id)
         });
@@ -275,9 +265,6 @@
             }
         }
         storeArray("employeeJSONArray", employeeArray);
-        // hier wird zunächst die anzeige gelöscht um dann die tabelle mti dem neuen zustands des arrays neu darzustellen
-        // document.getElementById("ausgabe").innerHTML = "";
-        // drawTable();
         location.reload();
     }
 
@@ -327,7 +314,6 @@
             if (array[i].id.toString() === index) {
                 // nehme die aktuellen values in den input-feldern und überschreibe damit die property values des objekts
                 // hierzu verwende ich die jeweiligen setter funktionen
-                console.log(array[i]);
                 array[i].setFirstName(document.getElementById("firstNameInput").value);
                 array[i].setLastName(document.getElementById("lastNameInput").value);
                 array[i].setMonSal(document.getElementById("monSalInput").value);
@@ -338,12 +324,6 @@
         resetInput(document.getElementById("firstNameInput"));
         resetInput(document.getElementById("lastNameInput"));
         resetInput(document.getElementById("monSalInput"));
-        // dann die anzeige geleert und die tabelle mit dem neuen zustand des arrays neu dargestellt
-        // addBtn wird in den ursprungszustand zurückversetzt
-        let addBtn = document.getElementById("addButton");
-        addBtn.innerHTML = "Hinzufügen";
-        addEmpListener();
-        // document.getElementById("upd"+index).style.display = "initial";
         location.reload();
     }
 
@@ -369,8 +349,6 @@
             resetInput(document.getElementById("firstNameInput"));
             resetInput(document.getElementById("lastNameInput"));
             resetInput(document.getElementById("monSalInput"));
-            document.getElementById("ausgabe").innerHTML = "";
-            drawTable();
         }
     }
 
